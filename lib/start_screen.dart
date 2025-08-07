@@ -16,10 +16,6 @@ class _StartScreenState extends State<StartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kPrimaryBackgroundColor,
-      appBar: AppBar(
-        title: Text('Консольный чат', style: TextStyle(fontSize: kDefaultFontSize, fontFamily: kFontFamily)),
-        backgroundColor: kPrimaryContainerColor,
-      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),

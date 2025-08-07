@@ -33,7 +33,7 @@ class MessageWidget extends StatelessWidget {
           sender,
           style: TextStyle(
             color: nicknameColor,
-            fontSize: kDefaultFontSize,
+            fontSize: kAppDefaultFontSize,
             fontFamily: kFontFamily,
             fontWeight: FontWeight.bold,
           ),
@@ -43,7 +43,7 @@ class MessageWidget extends StatelessWidget {
           delimiter,
           style: const TextStyle(
             color: Colors.white38,
-            fontSize: kDefaultFontSize,
+            fontSize: kAppDefaultFontSize,
             fontFamily: kFontFamily,
             fontWeight: FontWeight.bold,
           ),
@@ -54,7 +54,7 @@ class MessageWidget extends StatelessWidget {
             text,
             style: const TextStyle(
               color: Colors.greenAccent,
-              fontSize: kDefaultFontSize,
+              fontSize: kAppDefaultFontSize,
               fontFamily: kFontFamily,
             ),
           ),

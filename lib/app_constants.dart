@@ -6,5 +6,5 @@ const Color kPrimaryContainerColor = Color(0xFF212121); // Colors.grey[900]
 const Color kPrimaryTextColor = Colors.greenAccent;
 
 // Основные параметры текста
-const double kDefaultFontSize = 16.0;
+const double kAppDefaultFontSize = 16.0;
 const String kFontFamily = 'Courier';

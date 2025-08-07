@@ -43,7 +43,6 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Консольный чат', style: TextStyle(fontSize: kDefaultFontSize, fontFamily: kFontFamily)),
         backgroundColor: kPrimaryContainerColor,
       ),
       body: Column(

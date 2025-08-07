@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'start_screen.dart';
 import 'portrait_lock.dart';
 import 'app_constants.dart';
@@ -18,7 +17,7 @@ class ConsoleChatApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: kPrimaryBackgroundColor,
-        textTheme: TextTheme(bodyText2: TextStyle(fontFamily: kFontFamily, fontSize: kDefaultFontSize)),
+        textTheme: const TextTheme(bodyMedium: TextStyle(fontFamily: kFontFamily, fontSize: kDefaultFontSize)),
       ),
       home: StartScreen(),
     );
