@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'console_chat_screen.dart';
 import 'app_constants.dart';
+import 'client_data.dart';
 
 class StartScreen extends StatefulWidget {
   @override
@@ -89,13 +90,11 @@ class _StartScreenState extends State<StartScreen> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          final clientData = ClientData(nickname: _nicknameController.text, nicknameColor: _color);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ConsoleChatScreen(
-                                nickname: _nicknameController.text,
-                                color: _color,
-                              ),
+                              builder: (context) => ConsoleChatScreen(clientData: clientData),
                             ),
                           );
                         }

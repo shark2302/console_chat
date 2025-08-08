@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'message_widget.dart';
 import 'app_constants.dart';
 import 'websocket_service.dart';
+import 'client_data.dart';
 
 const String _delimiter = ">>>";
 class ConsoleChatScreen extends StatefulWidget {
-  final String nickname;
-  final Color color;
+  final ClientData clientData;
 
-  ConsoleChatScreen({required this.nickname, required this.color});
+  const ConsoleChatScreen({Key? key, required this.clientData}) : super(key: key);
 
   @override
   _ConsoleChatScreenState createState() => _ConsoleChatScreenState();
@@ -34,6 +34,11 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
     _tcpService = TcpSocketService(
       host: '10.0.2.2',
       port: 12345,
+      onConnect: () {
+        var json = widget.clientData.toJson().toString();
+        print(json);
+        _tcpService.send(json);
+      },
       onListen: (data) {
         setState(() {
           messages.add('Сервер$_delimiter${utf8.decode(data)}');
@@ -53,7 +58,7 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
     if (text.trim().isEmpty) return;
     _tcpService.send(utf8.decode(utf8.encode(text)));
     setState(() {
-      messages.add('${widget.nickname}$_delimiter$text');
+      messages.add('${widget.clientData.nickname}$_delimiter$text');
     });
     _controller.clear();
     FocusScope.of(context).unfocus();
@@ -83,8 +88,8 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
                     },
                     child: MessageWidget(
                       message: messages[realIndex],
-                      nickname: widget.nickname,
-                      userColor: widget.color,
+                      nickname: widget.clientData.nickname,
+                      userColor: widget.clientData.nicknameColor,
                       delimiter: _delimiter,
                     ),
                   ),

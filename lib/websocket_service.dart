@@ -7,13 +7,16 @@ class TcpSocketService {
   final String host;
   final int port;
   final void Function(List<int> data)? onListen;
+  final void Function()? onConnect;
 
-  TcpSocketService({required this.host, required this.port, this.onListen});
+  TcpSocketService({required this.host, required this.port, this.onListen, this.onConnect});
 
   Future<void> connect() async {
     try {
       _socket = await Socket.connect(host, port);
       print('Connected to: \\${_socket.remoteAddress.address}:\\${_socket.remotePort}');
+      if (onConnect != null)
+        onConnect!();
       _socket.listen(
         (data) {
           print('Received: \\${utf8.decode(data)}');
