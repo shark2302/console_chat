@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'message_widget.dart';
 import 'app_constants.dart';
+import 'start_screen.dart';
 import 'websocket_service.dart';
 import 'client_data.dart';
 import 'message.dart';
@@ -46,6 +47,12 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
           messages.add(message);
         });
       },
+      onConnectError: (){
+        _showConnectionErrorDialog(context);
+      },
+      onSocketClosed: () {
+        _showConnectionErrorDialog(context);
+      }
     );
     await _tcpService.connect();
   }
@@ -137,6 +144,26 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
   }
 }
 
-extension on Color {
-  String toHex() => '#${value.toRadixString(16).padLeft(8, '0').toUpperCase()}';
+void _showConnectionErrorDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => AlertDialog(
+      title: Text('Ошибка подключения'),
+      content: Text('Не удалось подключиться или соединение было разорвано.'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StartScreen(),
+              ),
+            );
+          },
+          child: Text('ОК'),
+        ),
+      ],
+    ),
+  );
 }

@@ -8,8 +8,10 @@ class TcpSocketService {
   final int port;
   final void Function(List<int> data)? onListen;
   final void Function()? onConnect;
+  final void Function()? onConnectError;
+  final void Function()? onSocketClosed;
 
-  TcpSocketService({required this.host, required this.port, this.onListen, this.onConnect});
+  TcpSocketService({required this.host, required this.port, this.onListen, this.onConnect, this.onConnectError, this.onSocketClosed});
 
   Future<void> connect() async {
     try {
@@ -28,11 +30,17 @@ class TcpSocketService {
           _socket.destroy();
         },
         onDone: () {
+          if (onSocketClosed != null){
+            onSocketClosed!();
+          }
           print('Socket closed');
         },
       );
     } catch (e) {
       print('Unable to connect: \\${e}');
+      if (onConnectError != null) {
+        onConnectError!();
+      }
     }
   }
 
