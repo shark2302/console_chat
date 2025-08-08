@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'message_widget.dart';
 import 'app_constants.dart';
+import 'websocket_service.dart';
 
 const String _delimiter = ">>>";
 class ConsoleChatScreen extends StatefulWidget {
@@ -17,26 +20,43 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
+  late TcpSocketService _tcpService;
   List<String> messages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAsync();
+  }
+
+  Future<void> _initializeAsync() async {
+    super.initState();
+    _tcpService = TcpSocketService(
+      host: '10.0.2.2',
+      port: 12345,
+      onListen: (data) {
+        setState(() {
+          messages.add('Сервер$_delimiter${utf8.decode(data)}');
+        });
+      },
+    );
+    await _tcpService.connect();
+  }
+
+  @override
+  void dispose() {
+    _tcpService.disconnect();
+    super.dispose();
+  }
 
   void _sendMessage(String text) {
     if (text.trim().isEmpty) return;
-
+    _tcpService.send(utf8.decode(utf8.encode(text)));
     setState(() {
-      messages.add('${widget.nickname}${_delimiter}${_controller.text}');
-      messages.add('Бот${_delimiter}${_getBotResponse(text)}');
+      messages.add('${widget.nickname}$_delimiter$text');
     });
-
     _controller.clear();
     FocusScope.of(context).unfocus();
-  }
-
-  String _getBotResponse(String message) {
-    message = message.toLowerCase();
-    if (message.contains('привет')) return 'Привет! Как дела?';
-    if (message.contains('как дела')) return 'Всё отлично!';
-    if (message.contains('пока')) return 'Пока!';
-    return 'Не понял.';
   }
 
   @override
