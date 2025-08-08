@@ -1,36 +1,40 @@
+import 'package:console_chat/MessageWidgets/CommonMessageWidget.dart';
 import 'package:flutter/material.dart';
+import 'MessageWidgets/JoinMessageWidget.dart';
+import 'MessageWidgets/WelcomeMessageWidget.dart';
 import 'app_constants.dart';
+import 'message.dart';
 
 class MessageWidget extends StatelessWidget {
-  final String message;
-  final String nickname;
-  final Color userColor;
+  final Message message;
   final String delimiter;
 
   const MessageWidget({
     Key? key,
     required this.message,
-    required this.nickname,
-    required this.userColor,
     required this.delimiter,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final parts = message.split(delimiter);
-    final sender = parts[0];
-    final text = parts.length > 1 ? parts.sublist(1).join(delimiter) : '';
-    Color nicknameColor;
-    if (sender == 'Бот') {
-      nicknameColor = Colors.blue;
-    } else {
-      nicknameColor = userColor;
+    if (message.type == 0) {
+      return JoinMessageWidget(message: message);
     }
+    if (message.type == 1) {
+      return WelcomeMessageWidget(message: message);
+    }
+    if(message.type == 2) {
+      return CommonMessageWidget(message: message);
+    }
+
+    Color nicknameColor;
+
+    nicknameColor = Colors.cyan;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          sender,
+          message.nickname,
           style: TextStyle(
             color: nicknameColor,
             fontSize: kAppDefaultFontSize,
@@ -51,7 +55,7 @@ class MessageWidget extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
           child: Text(
-            text,
+            message.text,
             style: const TextStyle(
               color: Colors.greenAccent,
               fontSize: kAppDefaultFontSize,

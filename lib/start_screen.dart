@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'console_chat_screen.dart';
 import 'app_constants.dart';
 import 'client_data.dart';
+import 'color_parser.dart';
 
 class StartScreen extends StatefulWidget {
   @override
@@ -11,7 +12,7 @@ class StartScreen extends StatefulWidget {
 class _StartScreenState extends State<StartScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nicknameController = TextEditingController();
-  Color _color = Colors.white;
+  String _color = "white";
 
   @override
   Widget build(BuildContext context) {
@@ -67,13 +68,7 @@ class _StartScreenState extends State<StartScreen> {
                   SizedBox(height: 10),
                   Wrap(
                     spacing: 8,
-                    children: [
-                      _buildColorButton(Colors.red),
-                      _buildColorButton(Colors.blue),
-                      _buildColorButton(Colors.green),
-                      _buildColorButton(Colors.orange),
-                      _buildColorButton(Colors.purple),
-                    ],
+                    children: ColorParser.getSupportedColors().map((color) => _buildColorButton(color)).toList(),
                   ),
                   SizedBox(height: 24),
                   SizedBox(
@@ -114,7 +109,7 @@ class _StartScreenState extends State<StartScreen> {
   Widget _buildColorButton(Color color) {
     return GestureDetector(
       onTap: () => setState(() {
-        _color = color;
+        _color = ColorParser.toStringName(color);
       }),
       child: Container(
         width: 40,
@@ -124,7 +119,7 @@ class _StartScreenState extends State<StartScreen> {
           color: color,
           border: Border.all(color: Colors.white, width: 2),
         ),
-        child: _color == color
+        child: _color == ColorParser.toStringName(color)
             ? Icon(
                 Icons.check,
                 color: Colors.white,

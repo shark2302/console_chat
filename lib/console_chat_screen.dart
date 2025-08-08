@@ -5,6 +5,7 @@ import 'message_widget.dart';
 import 'app_constants.dart';
 import 'websocket_service.dart';
 import 'client_data.dart';
+import 'message.dart';
 
 const String _delimiter = ">>>";
 class ConsoleChatScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
   final ScrollController _scrollController = ScrollController();
 
   late TcpSocketService _tcpService;
-  List<String> messages = [];
+  List<Message> messages = [];
 
   @override
   void initState() {
@@ -41,7 +42,8 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
       },
       onListen: (data) {
         setState(() {
-          messages.add('Сервер$_delimiter${utf8.decode(data)}');
+          Message message = Message.fromRawJson(utf8.decode(data));
+          messages.add(message);
         });
       },
     );
@@ -56,9 +58,15 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
 
   void _sendMessage(String text) {
     if (text.trim().isEmpty) return;
-    _tcpService.send(utf8.decode(utf8.encode(text)));
+    _tcpService.send(text);
     setState(() {
-      messages.add('${widget.clientData.nickname}$_delimiter$text');
+      Message message = new Message(
+        nickname: widget.clientData.nickname,
+        color: widget.clientData.nicknameColor,
+        text: text,
+        type: 2,
+      );
+      messages.add(message);
     });
     _controller.clear();
     FocusScope.of(context).unfocus();
@@ -83,13 +91,14 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
                   padding: const EdgeInsets.only(left: 12, right: 12, top: 4, bottom: 4),
                   child: GestureDetector(
                     onTap: () {
-                      final nickname = messages[realIndex].split(_delimiter)[0];
-                      _controller.text = "@$nickname ";
+                      var message = messages[realIndex];
+                      if (message.type != 0 && message.type != 1) {
+                        final nickname = messages[realIndex].nickname;
+                        _controller.text = "@$nickname ";
+                      }
                     },
                     child: MessageWidget(
                       message: messages[realIndex],
-                      nickname: widget.clientData.nickname,
-                      userColor: widget.clientData.nicknameColor,
                       delimiter: _delimiter,
                     ),
                   ),
