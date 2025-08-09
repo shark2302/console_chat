@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class ClientData {
   final String nickname;
   final String nicknameColor;
@@ -9,8 +11,12 @@ class ClientData {
         '\"color\"': "\"$nicknameColor\"",
       };
 
-  factory ClientData.fromJson(Map<String, dynamic> json) => ClientData(
-        nickname: json['nickname'],
-        nicknameColor: json['nicknameColor'],
-      );
+  factory ClientData.fromRawJson(String rawJson) {
+    var json = jsonDecode(rawJson);
+    var m = ClientData(
+      nickname: json['nickname'],
+      nicknameColor: json['color'],
+    );
+    return m;
+  }
 }

@@ -13,7 +13,7 @@ class WelcomeMessageWidget extends StatelessWidget {
     return RichText(text: TextSpan(
         children: [
           TextSpan(
-            text: "${message.text}, ",
+            text: "Добро пожаловать, ",
             style: const TextStyle(
               color: Colors.greenAccent,
               fontSize: kAppDefaultFontSize,

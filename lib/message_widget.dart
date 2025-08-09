@@ -18,7 +18,7 @@ class MessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (message.type == 0) {
+    if (message.type == 0 || message.type == 5) {
       return JoinMessageWidget(message: message);
     }
     if (message.type == 1) {

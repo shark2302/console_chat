@@ -16,7 +16,7 @@ class ConsoleChatApp extends StatelessWidget {
       title: 'Консольный чат',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: kPrimaryBackgroundColor,
+        scaffoldBackgroundColor: Colors.transparent,
         textTheme: const TextTheme(bodyMedium: TextStyle(fontFamily: kFontFamily, fontSize: kDefaultFontSize)),
       ),
       home: StartScreen(),

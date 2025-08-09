@@ -13,16 +13,28 @@ class Message {
     required this.type,
   });
 
+  static List<dynamic> tryParseJson(String jsonString) {
+    Message m;
+    try {
+      m = Message.fromRawJson(jsonString);
+      return [true, m];
+    }
+    catch (e) {
+      return [false, null];
+    }
+  }
+
   factory Message.fromRawJson(String rawJson) {
-    var json = jsonDecode(rawJson);
-    var m = Message(
+    return Message.fromJson(jsonDecode(rawJson));
+  }
+
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
       nickname: json['nickname'],
       color: json['color'],
       text: json['text'],
       type: json['type'],
     );
-    print(m.nickname);
-    return m;
   }
 
   Map<String, dynamic> toJson() {
