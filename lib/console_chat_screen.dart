@@ -44,6 +44,7 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
       onListen: (data) {
         setState(() {
           Message message = Message.fromRawJson(utf8.decode(data));
+          print(message);
           messages.add(message);
         });
       },
@@ -67,13 +68,15 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
     if (text.trim().isEmpty) return;
     _tcpService.send(text);
     setState(() {
-      Message message = new Message(
-        nickname: widget.clientData.nickname,
-        color: widget.clientData.nicknameColor,
-        text: text,
-        type: 2,
-      );
-      messages.add(message);
+      if (!text.startsWith("@")) {
+        Message message = new Message(
+            nickname: widget.clientData.nickname,
+            color: widget.clientData.nicknameColor,
+            text: text,
+            type: 2
+        );
+        messages.add(message);
+      }
     });
     _controller.clear();
     FocusScope.of(context).unfocus();
@@ -101,7 +104,9 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
                       var message = messages[realIndex];
                       if (message.type != 0 && message.type != 1) {
                         final nickname = messages[realIndex].nickname;
-                        _controller.text = "@$nickname ";
+                        if(nickname != widget.clientData.nickname) {
+                          _controller.text = "@$nickname ";
+                        }
                       }
                     },
                     child: MessageWidget(
@@ -166,4 +171,3 @@ void _showConnectionErrorDialog(BuildContext context) {
       ],
     ),
   );
-}

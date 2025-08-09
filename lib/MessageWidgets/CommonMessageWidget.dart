@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../app_constants.dart';
 import '../color_parser.dart';
 import '../message.dart';
@@ -13,7 +14,7 @@ class CommonMessageWidget extends StatelessWidget {
     return RichText(text: TextSpan(
         children: [
           TextSpan(
-              text: "[Время]",
+              text: DateFormat('[dd.MM.yyyy HH:mm]').format(DateTime.now()).toString(),
               style: const TextStyle(
                 color: Colors.grey,
                 fontSize: kAppDefaultFontSize,
