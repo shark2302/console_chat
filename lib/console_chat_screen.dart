@@ -29,6 +29,8 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
   List<Message> messages = [];
   List<ClientData> users = [];
   void Function(void Function())? _usersModalSetState;
+  bool _isSidePanelOpen = false;
+  bool _isDisposed = false;
 
   @override
   void initState() {
@@ -62,7 +64,9 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
           _showConnectionErrorDialog(context);
         },
         onSocketClosed: () {
-          _showConnectionErrorDialog(context);
+          if (!_isDisposed) {
+            _showConnectionErrorDialog(context);
+          }
         });
     await _tcpService.connect();
   }
@@ -70,6 +74,7 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
   @override
   void dispose() {
     _tcpService.disconnect();
+    _isDisposed = true;
     super.dispose();
   }
 
@@ -140,7 +145,10 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
             IconButton(
                 icon: Icon(Icons.menu),
                 onPressed: () {
-                  _showUsersList();
+                  FocusScope.of(context).unfocus();
+                  setState(() {
+                    _isSidePanelOpen = true;
+                  });
                 })
           ],
         ),
@@ -204,78 +212,78 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
             ),
           ],
         ),
-      )
-    ]);
-  }
-
-  void _showUsersList() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            _usersModalSetState = setModalState;
-            return Align(
-              alignment: Alignment.centerRight,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.7,
-                height: MediaQuery.of(context).size.height,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    bottomLeft: Radius.circular(24),
+      ),
+      AnimatedPositioned(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.ease,
+        right: _isSidePanelOpen ? 0 : -MediaQuery.of(context).size.width * 0.7,
+        top: 0,
+        bottom: 0,
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.7,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              bottomLeft: Radius.circular(24),
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 22.0, right: 0), // 16 — подберите под себя
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: Icon(Icons.close, color: Colors.white),
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      setState(() {
+                        _isSidePanelOpen = false;
+                      });
+                    },
                   ),
                 ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  "Список пользователей:",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+              ),
+              Expanded(
                 child: ListView.builder(
-                  padding: EdgeInsets.all(16),
-                  itemCount: users.length + 2,
+                  padding: EdgeInsets.only(left:32),
+                  itemCount: users.length,
                   itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return Align(
-                        alignment: Alignment.topRight,
-                        child: IconButton(
-                          icon: Icon(Icons.close, color: Colors.white),
-                          onPressed: () {
-                            FocusScope.of(context).unfocus();
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      );
-                    }
-                    if (index == 1) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Text(
-                          "Список пользователей:",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      );
-                    }
-                    final user = users[index - 2];
+                    final user = users[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 6.0),
                       child: Text(
                         user.nickname,
                         style: TextStyle(
                           color: ColorParser.fromString(user.nicknameColor),
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none
                         ),
                       ),
                     );
                   },
                 ),
               ),
-            );
-          },
-        );
-      },
-    );
+            ],
+          ),
+        ),
+      ),
+    ]);
   }
 }
 
