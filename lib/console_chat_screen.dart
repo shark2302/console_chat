@@ -31,6 +31,7 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
   void Function(void Function())? _usersModalSetState;
   bool _isSidePanelOpen = false;
   bool _isDisposed = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -125,12 +126,18 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
       }
       else {
         messages.addAll(parseMessageList(part));
+        if (_isLoading) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Stack(children: [
       Positioned.fill(
         child: Image.asset(
@@ -283,6 +290,11 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
           ),
         ),
       ),
+      if (_isLoading)
+        Container(
+          color: Colors.black45,
+          child: Center(child: CircularProgressIndicator()),
+        ),
     ]);
   }
 }
