@@ -28,6 +28,7 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
   late TcpSocketService _tcpService;
   List<Message> messages = [];
   List<ClientData> users = [];
+  void Function(void Function())? _usersModalSetState;
 
   @override
   void initState() {
@@ -53,6 +54,9 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
              curve: Curves.easeOut,
            );
           });
+          if (_usersModalSetState != null) {
+            _usersModalSetState!(() {});
+          }
         },
         onConnectError: () {
           _showConnectionErrorDialog(context);
@@ -136,7 +140,7 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
             IconButton(
                 icon: Icon(Icons.menu),
                 onPressed: () {
-                  _showUsersList(context, users);
+                  _showUsersList();
                 })
           ],
         ),
@@ -203,6 +207,76 @@ class _ConsoleChatScreenState extends State<ConsoleChatScreen> {
       )
     ]);
   }
+
+  void _showUsersList() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            _usersModalSetState = setModalState;
+            return Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    bottomLeft: Radius.circular(24),
+                  ),
+                ),
+                child: ListView.builder(
+                  padding: EdgeInsets.all(16),
+                  itemCount: users.length + 2,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return Align(
+                        alignment: Alignment.topRight,
+                        child: IconButton(
+                          icon: Icon(Icons.close, color: Colors.white),
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      );
+                    }
+                    if (index == 1) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          "Список пользователей:",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    }
+                    final user = users[index - 2];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 6.0),
+                      child: Text(
+                        user.nickname,
+                        style: TextStyle(
+                          color: ColorParser.fromString(user.nicknameColor),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 }
 
 void _showConnectionErrorDialog(BuildContext context) {
@@ -229,57 +303,6 @@ void _showConnectionErrorDialog(BuildContext context) {
   );
 }
 
-void _showUsersList(BuildContext context, List<ClientData> users) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (context) => Align(
-      alignment: Alignment.centerRight,
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.7,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            bottomLeft: Radius.circular(24),
-          ),
-        ),
-        child: ListView.builder(
-          padding: EdgeInsets.all(16),
-          itemCount: users.length + 2,
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return Align(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                  icon: Icon(Icons.close, color: Colors.white),
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    Navigator.of(context).pop();
-                  },
-                ),
-              );
-            }
-            if (index == 1) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text("Список пользователей:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              );
-            }
-            final user = users[index - 2];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 6.0),
-              child: Text(user.nickname, style: TextStyle(color: ColorParser.fromString(user.nicknameColor), fontWeight: FontWeight.bold)),
-            );
-
-          },
-        )
-      ),
-    ),
-  );
-}
 
 List<ClientData> parseClientDataList(String jsonString) {
   final List<dynamic> decoded = jsonDecode(jsonString);
